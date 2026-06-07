@@ -2,18 +2,18 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "game_shared.h"
+#include "opengl_render.h"
+#include "doom_graphics.h"
 
 typedef void (*game_reset_fn)(GameState *);
 typedef void (*game_tick_fn)(GameState *, const InputState *);
 typedef void (*game_render_fn)(GameState *, uint32_t *, float *);
 
-static uint32_t pixels[SCREEN_W * SCREEN_H];
-static float zbuffer[SCREEN_W];
+static OpenGLContext gl_ctx;
 static GameState game;
 
 static HINSTANCE g_hInst;
 static HWND g_hwnd;
-static BITMAPINFO bmi;
 
 static int mouse_locked = 1;
 static HMODULE game_dll;
@@ -131,18 +131,6 @@ static void capture_input(HWND hwnd, InputState *in) {
     }
 }
 
-static void present(HDC hdc, RECT rc) {
-    StretchDIBits(
-        hdc,
-        0, 0, rc.right - rc.left, rc.bottom - rc.top,
-        0, 0, SCREEN_W, SCREEN_H,
-        pixels,
-        &bmi,
-        DIB_RGB_COLORS,
-        SRCCOPY
-    );
-}
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_DESTROY:
@@ -161,10 +149,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_PAINT: {
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-            RECT rc;
-            GetClientRect(hwnd, &rc);
-            present(hdc, rc);
+            BeginPaint(hwnd, &ps);
             EndPaint(hwnd, &ps);
             return 0;
         }
@@ -198,7 +183,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     g_hInst = hInstance;
 
-    const char CLASS_NAME[] = "MiniDoomPlusClass";
+    const char CLASS_NAME[] = "MiniDoomPlusOpenGLClass";
 
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
@@ -214,7 +199,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     g_hwnd = CreateWindowEx(
         0,
         CLASS_NAME,
-        "Mini DOOM Plus - Mejorado",
+        "Mini DOOM Plus - Renderizado OpenGL",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         960, 640,
@@ -231,22 +216,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ShowWindow(g_hwnd, nCmdShow);
 
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = SCREEN_W;
-    bmi.bmiHeader.biHeight = -SCREEN_H;
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;
-    bmi.bmiHeader.biCompression = BI_RGB;
+    /* Inicializar OpenGL */
+    printf("[INFO] Inicializando OpenGL...\n");
+    if (!opengl_init(g_hwnd, &gl_ctx)) {
+        MessageBoxA(NULL, "No se pudo inicializar OpenGL", "Error", MB_ICONERROR);
+        return 1;
+    }
+    printf("[INFO] OpenGL inicializado correctamente\n");
 
+    /* Cargar DLL del juego */
     if (!load_game_dll()) {
+        opengl_cleanup(&gl_ctx);
         return 1;
     }
 
+    /* Configurar OpenGL para renderizado DOOM */
+    opengl_setup_lighting();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    printf("[INFO] Iniciando juego...\n");
     game_reset_ptr(&game);
     update_mouse_lock(g_hwnd);
 
     MSG msg;
     int running = 1;
+    unsigned int frame_count = 0;
+
+    printf("[INFO] Loop de juego iniciado\n");
 
     while (running) {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -259,20 +257,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         capture_input(g_hwnd, &input);
 
         game_tick_ptr(&game, &input);
-        game_render_ptr(&game, pixels, zbuffer);
+        
+        /* Renderizado OpenGL */
+        opengl_begin_frame();
 
-        HDC hdc = GetDC(g_hwnd);
-        RECT rc;
-        GetClientRect(g_hwnd, &rc);
-        present(hdc, rc);
-        ReleaseDC(g_hwnd, hdc);
+        /* Renderizar escena 3D estilo DOOM */
+        doom_render_3d_scene(&game);
+
+        /* Renderizar HUD */
+        doom_draw_hud(&game);
+
+        /* Presentar frame */
+        opengl_end_frame(&gl_ctx);
+
+        frame_count++;
+        
+        /* Debug info cada 60 frames */
+        if (frame_count % 60 == 0) {
+            printf("[FRAME %u] Player: (%.2f, %.2f, %.2f°) HP: %d\n", 
+                   frame_count, game.player.x, game.player.y, game.player.a * 180.0f / 3.14159f, 
+                   game.player.hp);
+        }
 
         Sleep(1);
     }
 
+    printf("[INFO] Cerrando juego...\n");
+
     if (game_dll) FreeLibrary(game_dll);
+    opengl_cleanup(&gl_ctx);
     ClipCursor(NULL);
     set_cursor_visible(1);
+
+    printf("[INFO] Juego cerrado correctamente\n");
 
     return 0;
 }
