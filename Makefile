@@ -1,35 +1,61 @@
-# Compilador y flags
+# =========================
+# COMPILADOR
+# =========================
 CC = gcc
-CFLAGS = -Wall -I./src
+CFLAGS = -Wall -O2 -I./src
 
-# Directorios
+# =========================
+# DIRECTORIOS
+# =========================
 SRC_DIR = src
 BIN_DIR = bin
 
-# Archivos fuente
-SRC = $(SRC_DIR)/main.c \
-      $(SRC_DIR)/game_dll.c \
-      $(SRC_DIR)/doom_graphics.c \
-      $(SRC_DIR)/opengl_render.c
+# =========================
+# ARCHIVOS
+# =========================
+DLL_SRC = $(SRC_DIR)/game_dll.c \
+          $(SRC_DIR)/doom_graphics.c \
+          $(SRC_DIR)/opengl_render.c
 
-# Objetos
-OBJ = $(SRC:.c=.o)
+EXE_SRC = $(SRC_DIR)/main.c
 
-# Ejecutables
 DLL = $(BIN_DIR)/game_dll.dll
 EXE = $(BIN_DIR)/doom_plus_gl.exe
 
-# Regla por defecto
-all: $(DLL) $(EXE)
+# =========================
+# DEFAULT
+# =========================
+all: $(BIN_DIR) $(DLL) $(EXE)
 
-# Compilar DLL
-$(DLL): $(SRC_DIR)/game_dll.c $(SRC_DIR)/doom_graphics.c $(SRC_DIR)/opengl_render.c
+# =========================
+# CREAR BIN SI NO EXISTE
+# =========================
+$(BIN_DIR):
+	if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+
+# =========================
+# COMPILAR OBJETOS DLL
+# =========================
+DLL_OBJ = $(DLL_SRC:.c=.o)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# =========================
+# DLL (lógica del juego)
+# =========================
+$(DLL): $(DLL_OBJ)
 	$(CC) -shared -o $@ $^ -lm
 
-# Compilar ejecutable
-$(EXE): $(SRC_DIR)/main.c
+# =========================
+# EXE (motor OpenGL + WinAPI)
+# =========================
+$(EXE): $(EXE_SRC)
 	$(CC) $^ -o $@ -mwindows -lgdi32 -luser32 -lopengl32 -lglu32
 
-# Limpiar archivos compilados
+# =========================
+# LIMPIAR
+# =========================
 clean:
-	rm -f $(SRC_DIR)/*.o $(DLL) $(EXE)
+	del /Q src\*.o
+	del /Q bin\*.dll bin\*.exe
