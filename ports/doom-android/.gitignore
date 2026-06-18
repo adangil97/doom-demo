@@ -1,0 +1,40 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+*.apk
+*.aab
+
+# iOS
+ios/Pods/
+ios/Podfile.lock
+
+# Build
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+.manus-logs/
+*.log
