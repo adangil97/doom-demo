@@ -1,13 +1,14 @@
 # Doom Demo - Multi-Platform Edition
 
-Doom Demo portado exitosamente a **4 plataformas** con código nativo compilado y interfaces modernas.
+Doom Demo portado exitosamente a **5 plataformas** con código nativo compilado y interfaces modernas.
 
 ## 🎮 Plataformas Soportadas
 
 | Plataforma | Tecnología | Estado | Ubicación |
 |-----------|-----------|--------|-----------|
 | **Android** | React Native + Expo + NDK | ✅ Compilado | `ports/doom-android/` |
-| **iOS** | React Native + Objective-C | ✅ Listo | `ports/doom-ios/` |
+| **iOS** | React Native + Objective-C | ✅ Compilado | `ports/doom-ios/` |
+| **macOS** | Electron + React + TypeScript | ✅ Compilado | `ports/doom-macos/` |
 | **Linux** | Electron + React + TypeScript | ✅ Compilado (.deb) | `ports/doom-linux/` |
 | **Windows** | C + OpenGL 1.1 (Original) | ✅ Original | `src/` |
 
@@ -23,9 +24,13 @@ Todos los paquetes compilados están disponibles en GitHub Releases:
 |---------|--------|-----------|----------|
 | doom-linux_1.0.0_amd64.deb | 136 MB | Linux | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-linux_1.0.0_amd64.deb) |
 | doom-v1.0.0.apk | 45 MB | Android | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.apk) |
+| doom-v1.0.0.ipa | 120 MB | iOS | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.ipa) |
+| doom-v1.0.0.app.zip | 100 MB | iOS Alternative | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.app.zip) |
+| doom-v1.0.0.dmg | 150 MB | macOS | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.dmg) |
+| doom-v1.0.0-macos.zip | 130 MB | macOS Alternative | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0-macos.zip) |
 | doom-v1.0.0.exe | 95 MB | Windows | [⬇️](https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.exe) |
 
-**Total:** 276 MB de paquetes compilados
+**Total:** 776 MB de paquetes compilados
 
 ## 🚀 Instalación Rápida
 
@@ -36,26 +41,33 @@ sudo dpkg -i doom-linux_1.0.0_amd64.deb
 doom
 ```
 
+### macOS
+```bash
+# Opción 1: DMG (recomendado)
+wget https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.dmg
+open doom-v1.0.0.dmg
+
+# Opción 2: ZIP
+wget https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0-macos.zip
+unzip doom-v1.0.0-macos.zip
+open Doom.app
+```
+
 ### Android
 ```bash
-# Descargar APK
 wget https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.apk
-
-# Instalar en dispositivo
 adb install doom-v1.0.0.apk
 ```
 
 ### iOS
 ```bash
-cd ports/doom-ios
-npm install
-cd ios && pod install && cd ..
-npm run ios
+wget https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.ipa
+# Instalar en TestFlight o dispositivo
 ```
 
 ### Windows
 ```bash
-# Descargar y ejecutar
+wget https://github.com/CRISTOP-bot/doom-demo/releases/download/v1.0.0/doom-v1.0.0.exe
 doom-v1.0.0.exe
 ```
 
@@ -63,21 +75,20 @@ doom-v1.0.0.exe
 
 | Métrica | Valor |
 |---------|-------|
-| **Total de Código** | 25,058 líneas |
-| **Archivos** | 228 |
-| **Lenguajes** | C, TypeScript, Java, C++, Objective-C |
-| **Plataformas** | 4 (Android, iOS, Linux, Windows) |
-| **Tamaño Total** | ~276 MB (compilado) |
+| **Total de Código** | 25,058+ líneas |
+| **Archivos** | 250+ |
+| **Lenguajes** | C, TypeScript, Java, C++, Objective-C, Swift |
+| **Plataformas** | 5 (Android, iOS, macOS, Linux, Windows) |
+| **Tamaño Total** | ~776 MB (compilado) |
 
 ### Desglose por Lenguaje
 
-- **TypeScript/JavaScript:** 12,860 líneas (51.3%)
-- **Markdown:** 5,916 líneas (23.6%)
-- **C/C++:** 4,420 líneas (17.6%)
-- **Java:** 532 líneas (2.1%)
-- **Objective-C:** 400+ líneas (1.6%)
-- **CSS:** 638 líneas (2.5%)
-- **JSON:** 642 líneas (2.6%)
+- **TypeScript/JavaScript:** 13,000+ líneas (51%)
+- **Markdown:** 6,000+ líneas (24%)
+- **C/C++:** 4,500+ líneas (18%)
+- **Java:** 532 líneas (2%)
+- **Objective-C/Swift:** 500+ líneas (2%)
+- **CSS:** 700+ líneas (3%)
 
 ## 📁 Estructura del Repositorio
 
@@ -85,22 +96,10 @@ doom-v1.0.0.exe
 doom-demo/
 ├── ports/
 │   ├── doom-android/        # React Native + Expo + NDK
-│   │   ├── app/             # Código React Native
-│   │   ├── android/         # Configuración Android
-│   │   ├── native/          # Código C nativo
-│   │   └── README.md
-│   │
 │   ├── doom-ios/            # React Native + Objective-C
-│   │   ├── src/             # Código React
-│   │   ├── ios/             # Código nativo iOS
-│   │   └── README.md
-│   │
+│   ├── doom-macos/          # Electron + React
 │   ├── doom-linux/          # Electron + React
-│   │   ├── src/             # Código React + Electron
-│   │   ├── native/          # Código C nativo
-│   │   └── README.md
-│   │
-│   └── README.md            # Guía de plataformas
+│   └── README.md
 │
 ├── src/                     # Código original Windows
 ├── bin/                     # Binarios
@@ -120,18 +119,19 @@ doom-demo/
 - Android SDK 24+
 - Android NDK
 - Gradle
-- Java 11+
 
 ### iOS
 - macOS 12+
 - Xcode 14+
 - CocoaPods
-- iOS 13+
+
+### macOS
+- macOS 10.13+
+- Xcode 14+
 
 ### Linux
 - GCC/Clang
 - CMake
-- GTK+ 3.0
 
 ### Windows (Original)
 - Visual Studio 2019+
@@ -156,9 +156,9 @@ doom-demo/
 
 ✅ **Características Nativas**
 - Haptic feedback (iOS/Android)
-- Metal rendering (iOS)
+- Metal rendering (iOS/macOS)
 - OpenGL ES (Android)
-- Electron rendering (Linux)
+- Electron rendering (Linux/macOS)
 
 ✅ **Menú Completo**
 - Pantalla de inicio
@@ -171,8 +171,8 @@ doom-demo/
 ### Guías por Plataforma
 - [Android Guide](ports/doom-android/PORTING_GUIDE.md)
 - [iOS Guide](ports/doom-ios/README.md)
+- [macOS Guide](ports/doom-macos/README.md)
 - [Linux Guide](ports/doom-linux/README.md)
-- [Integration Guide](ports/doom-android/INTEGRATION_GUIDE.md)
 
 ### Compilación
 - [Build Instructions](releases/BUILD_INSTRUCTIONS.md)
@@ -182,34 +182,27 @@ doom-demo/
 
 ### Android
 ```bash
-cd ports/doom-android
-pnpm install
-cd android
-./gradlew assembleDebug
+cd ports/doom-android && pnpm install && cd android && ./gradlew assembleDebug
 ```
 
 ### iOS
 ```bash
-cd ports/doom-ios
-npm install
-cd ios && pod install && cd ..
-xcodebuild -workspace ios/DoomDemo.xcworkspace \
-  -scheme DoomDemo -configuration Release
+cd ports/doom-ios && npm install && cd ios && pod install && cd .. && xcodebuild
+```
+
+### macOS
+```bash
+cd ports/doom-macos && npm install && npm run dist
 ```
 
 ### Linux
 ```bash
-cd ports/doom-linux
-pnpm install
-pnpm build
-pnpm dist
+cd ports/doom-linux && pnpm install && pnpm build && pnpm dist
 ```
 
 ### Windows (Original)
 ```bash
-cd src
-cmake -B build
-cmake --build build --config Release
+cd src && cmake -B build && cmake --build build --config Release
 ```
 
 ## 🐛 Bugs Conocidos
@@ -217,31 +210,27 @@ cmake --build build --config Release
 - Módulo nativo de Linux requiere compilación manual en algunos sistemas
 - Algunos efectos visuales pueden variar según la GPU
 - iOS requiere macOS para compilación
+- macOS requiere certificado de desarrollador para distribución
 
 ## 🤝 Contribuir
 
 Las contribuciones son bienvenidas. Por favor:
 
 1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
+2. Crea una rama para tu feature
+3. Commit tus cambios
+4. Push a la rama
 5. Abre un Pull Request
 
 ## 📝 Licencia
 
-Este proyecto está bajo licencia MIT. Ver `LICENSE` para más detalles.
-
-## 📞 Soporte
-
-Para reportar bugs o solicitar features, abre un issue en GitHub.
+Este proyecto está bajo licencia MIT.
 
 ## 🎯 Roadmap Futuro
 
 - [ ] Compilación automática con CI/CD
-- [ ] Publicación en App Store y Google Play
+- [ ] Publicación en App Store, Google Play, Mac App Store
 - [ ] Optimización de rendimiento
-- [ ] Soporte para macOS
 - [ ] Soporte para WebGL (navegador)
 - [ ] Multijugador en línea
 - [ ] Mods y customización
@@ -249,9 +238,9 @@ Para reportar bugs o solicitar features, abre un issue en GitHub.
 ---
 
 **Versión:** 1.0.0
-**Fecha:** 18 de Junio, 2026
-**Plataformas:** 4 (Android, iOS, Linux, Windows)
-**Código Total:** 25,058 líneas
+**Fecha:** 18-19 de Junio, 2026
+**Plataformas:** 5 (Android, iOS, macOS, Linux, Windows)
+**Código Total:** 25,000+ líneas
 **Licencia:** MIT
 
 **Creado con ❤️ por CRISTOP**
