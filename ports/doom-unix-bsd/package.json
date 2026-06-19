@@ -1,0 +1,77 @@
+{
+  "name": "doom-unix-bsd",
+  "version": "1.0.0",
+  "description": "Doom Demo - Universal Unix/BSD Edition (Linux, FreeBSD, OpenBSD, NetBSD, etc.)",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:react\" \"wait-on http://localhost:3000 && pnpm dev:electron\"",
+    "dev:react": "vite --port 3000",
+    "dev:electron": "electron .",
+    "build": "pnpm build:react && pnpm build:electron",
+    "build:react": "vite build",
+    "build:electron": "tsc src/main.ts --outDir dist --module commonjs --target es2020 --skipLibCheck",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:appimage": "electron-builder --linux AppImage",
+    "dist:snap": "electron-builder --linux snap",
+    "dist:deb": "electron-builder --linux deb",
+    "dist:rpm": "electron-builder --linux rpm",
+    "dist:tar": "electron-builder --linux tar.gz",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.0.0",
+    "electron": "^31.0.0",
+    "electron-builder": "^25.0.0",
+    "electron-is-dev": "^3.0.1",
+    "typescript": "^5.9.0",
+    "vite": "^5.4.0",
+    "vitest": "^2.0.0",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.doom.unix",
+    "productName": "Doom",
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz",
+        "deb",
+        "rpm"
+      ],
+      "category": "Game",
+      "icon": "assets/icon.png"
+    },
+    "appImage": {
+      "artifactName": "Doom-${version}.AppImage"
+    },
+    "deb": {
+      "depends": [
+        "libxss1",
+        "libgconf-2-4"
+      ]
+    },
+    "rpm": {
+      "depends": [
+        "libXss",
+        "GConf2"
+      ]
+    }
+  },
+  "publish": null
+}
