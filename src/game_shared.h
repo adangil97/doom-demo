@@ -2,6 +2,8 @@
 #define GAME_SHARED_H
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define SCREEN_W 320
 #define SCREEN_H 200
@@ -11,6 +13,26 @@
 #define MAX_BULLETS 32
 #define FOV 1.0f
 #define HUD_HEIGHT 40
+
+/* Safe memory management macros */
+#define SAFE_FREE(ptr) do { \
+    if ((ptr) != NULL) { \
+        free(ptr); \
+        (ptr) = NULL; \
+    } \
+} while(0)
+
+#define SAFE_CALL(obj, method, ...) do { \
+    if ((obj) != NULL) { \
+        method((obj), ##__VA_ARGS__); \
+    } \
+} while(0)
+
+#define NULL_CHECK(ptr) \
+    if ((ptr) == NULL) return
+
+#define NULL_CHECK_RET(ptr, ret) \
+    if ((ptr) == NULL) return (ret)
 
 typedef struct {
     int w, a, s, d;
