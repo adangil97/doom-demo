@@ -1,4 +1,4 @@
-Maintainer: Cristopher "cristopher@example.com" (mailto:cristopher@example.com)
+Maintainer: Cristopher "cristopher@example.com" (mailto: borjascristopher88@gmail.com)
 
 pkgname=doom-demo
 pkgver=1.0.0
